@@ -20,7 +20,7 @@ on:
       ios_flags:
         description: Ios Flags
         required: false
-        default: -nosign
+        default: 
         
       platform:
         description: "Build platform"
@@ -91,9 +91,6 @@ jobs:
          restore-keys: |
           android-cache-${{ runner.os }}-
 
-      - name: Delete OpenFL
-        run: rm -rf ~/.haxelib/openfl
-
       - name: Setup environment
         run: |
          mkdir -p /home/runner/hxcpp_cache
@@ -128,12 +125,12 @@ jobs:
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2" \
-            "ndk;29.0.14206865"
+            "ndk;21.4.7075529"
 
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_NDK_ROOT=$HOME/android-sdk/ndk/29.0.14206865" >> $GITHUB_ENV
-
+          echo "ANDROID_NDK_ROOT=$HOME/android-sdk/ndk/21.4.7075529" >> $GITHUB_ENV
+         
       - name: Build Apk
         run: |
          mkdir -p ~/.gradle
@@ -144,7 +141,7 @@ jobs:
           echo "android.splits.abi.enable=false" >> ~/.gradle/gradle.properties
           echo "JAVA_TOOL_OPTIONS=-Xmx5g" >> $GITHUB_ENV
           echo "${{ secrets.KEYSTORE }}" | base64 -d > keystore.jks
-          find ~/hxcpp_cache -name "*.pch" -delete
+          # find ~/hxcpp_cache -name "*.pch" -delete
          haxelib run lime clean android
          haxelib run lime build android -final -release \
            --certificate-path="keystore.jks" \
@@ -218,7 +215,7 @@ jobs:
         run: |
           rm -rf export/ios/build
           rm -rf $PWD/build
-          haxelib run lime build ios ${{ github.event.inputs.ios_flags }}
+          haxelib run lime build ios -nosign ${{ github.event.inputs.ios_flags }}
           find . -name "*.ipa"
            
       - name: Compile Xcode Project
