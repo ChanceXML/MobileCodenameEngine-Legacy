@@ -114,28 +114,40 @@ class Main extends Sprite
 	}
 
 	public static function loadGameSettings() {
+		trace("1");
 		WindowUtils.init();
+		trace("2");
 		SaveWarning.init();
+		trace("2.999999");
 		MemoryUtil.init();
 		@:privateAccess
+		trace("4");
 		FlxG.game.getTimer = getTimer;
 		#if ALLOW_MULTITHREADING
 		for(i in 0...4)
 			gameThreads.push(Thread.createWithEventLoop(function() {Thread.current().events.promise();}));
 		#end
+		trace("5");
 		FunkinCache.init();
+		trace("100");
 		Paths.assetsTree = new AssetsLibraryList();
 
+		trace("7");
 		#if UPDATE_CHECKING
 		funkin.backend.system.updating.UpdateUtil.init();
 		#end
+		trace("8");
 		ShaderResizeFix.init();
+		trace("9");
 		Logs.init();
+		trace("10");
 		Paths.init();
+		trace("11");
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
 		#end
 
+		trace("12");
 		#if (sys && TEST_BUILD)
 			trace("Used cne test / cne build. Switching into source assets.");
 			#if MOD_SUPPORT
@@ -148,22 +160,30 @@ class Main extends Sprite
 		#end
 
 
+		trace("20");
 		var lib = new AssetLibrary();
 		@:privateAccess
 		lib.__proxy = Paths.assetsTree;
 		Assets.registerLibrary('default', lib);
 
+		trace("21");
 		funkin.options.PlayerSettings.init();
+		trace("22");
 		funkin.savedata.FunkinSave.init();
+		trace("27");
 		Options.load();
 
 		FlxG.fixedTimestep = false;
 
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
+		trace("28");
 		Conductor.init();
+		trace("29");
 		AudioSwitchFix.init();
+		trace("40");
 		EventManager.init();
+		trace("41");
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);
@@ -173,11 +193,13 @@ class Main extends Sprite
 		if(funkin.backend.utils.NativeAPI.hasVersion("Windows 10")) funkin.backend.utils.NativeAPI.redrawWindowHeader();
 		#end
 
+		trace("50");
 		ModsFolder.init();
 		#if MOD_SUPPORT
 		ModsFolder.switchMod(modToLoad.getDefault(Options.lastLoadedMod));
 		#end
 
+		trace("51");
 		initTransition();
 	}
 
