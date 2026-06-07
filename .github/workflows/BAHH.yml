@@ -1,0 +1,61 @@
+name: Fetch Release Source
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: 'Repository'
+        required: true
+        type: string
+        default: 'OwnerName/RepoName'
+      tag_name:
+        description: 'Release Tag'
+        required: true
+        type: string
+      min_folders:
+        description: 'Minimum folders required'
+        required: true
+        type: string
+        default: '2'
+      target_branch:
+        description: 'Branch'
+        required: true
+        type: string
+        default: 'main'
+
+jobs:
+  fetch_and_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          
+      - name: download
+        run: |
+          mkdir -p temp_extract
+          curl -L "https://github.com/${{ inputs.target_repo }}/archive/refs/tags/${{ inputs.tag_name }}.tar.gz" -o source.tar.gz
+          tar -xzf source.tar.gz -C temp_extract
+          
+          CURRENT_DIR="temp_extract"
+          
+          while true; do
+            DIR_COUNT=$(find "$CURRENT_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l)
+            if [ "$DIR_COUNT" -ge "${{ inputs.min_folders }}" ]; then
+              break
+            elif [ "$DIR_COUNT" -eq 1 ]; then
+              CURRENT_DIR=$(find "$CURRENT_DIR" -mindepth 1 -maxdepth 1 -type d)
+            else
+              break
+            fi
+          done
+          
+          rsync -av --exclude='.git' --exclude='.github' "$CURRENT_DIR/" ./
+          rm -rf temp_extract source.tar.gz
+          
+      - name: commit
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Import source from ${{ inputs.target_repo }} tag ${{ inputs.tag_name }}" || echo "No changes to commit"
+          git push origin ${{ inputs.target_branch }}
