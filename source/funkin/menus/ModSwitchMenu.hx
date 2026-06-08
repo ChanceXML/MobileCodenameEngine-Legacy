@@ -34,6 +34,11 @@ class ModSwitchMenu extends MusicBeatSubstate {
 		}
 		add(alphabets);
 		changeSelection(0, true);
+		
+		#if mobile
+        virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+        #end
 	}
 
 	public override function update(elapsed:Float) {
