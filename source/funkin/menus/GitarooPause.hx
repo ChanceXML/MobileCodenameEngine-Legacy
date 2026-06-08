@@ -53,26 +53,47 @@ class GitarooPause extends MusicBeatState
 		if (controls.LEFT_P || controls.RIGHT_P)
 			changeThing();
 
-		if (controls.ACCEPT)
+		if (FlxG.mouse.justPressed)
 		{
-			if (PlayState.instance != null && PlayState.chartingMode && Charter.undos.unsaved)
-				PlayState.instance.saveWarn(false);
-			else {
+			if (FlxG.mouse.overlaps(replayButton))
+			{
 				if (replaySelect)
-				{
-					FlxG.switchState(new PlayState());
-				}
+					selectOption();
 				else
-				{
-					PlayState.resetSongInfos();
-					if (Charter.instance != null) Charter.instance.__clearStatics();
-
-					FlxG.switchState(new MainMenuState());
-				}
+					changeThing();
+			}
+			else if (FlxG.mouse.overlaps(cancelButton))
+			{
+				if (!replaySelect)
+					selectOption();
+				else
+					changeThing();
 			}
 		}
 
+		if (controls.ACCEPT)
+			selectOption();
+
 		super.update(elapsed);
+	}
+
+	function selectOption():Void
+	{
+		if (PlayState.instance != null && PlayState.chartingMode && Charter.undos.unsaved)
+			PlayState.instance.saveWarn(false);
+		else {
+			if (replaySelect)
+			{
+				FlxG.switchState(new PlayState());
+			}
+			else
+			{
+				PlayState.resetSongInfos();
+				if (Charter.instance != null) Charter.instance.__clearStatics();
+
+				FlxG.switchState(new MainMenuState());
+			}
+		}
 	}
 
 	function changeThing():Void
