@@ -25,6 +25,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import flixel.input.keyboard.FlxKey;
 import haxe.io.Path;
 import funkin.backend.system.Conductor;
 import funkin.game.cutscenes.*;
