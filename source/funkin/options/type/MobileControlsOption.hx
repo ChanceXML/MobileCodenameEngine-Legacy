@@ -22,7 +22,7 @@ class MobileControlsOption extends ArrayOption {
 	override function onChangeSelection(change:Float) {
 	}
 
-	function onSelect() {
+	override function onSelect() {
 		FlxG.state.openSubState(new funkin.menus.MobileControlsSubstate());
 	}
 }
