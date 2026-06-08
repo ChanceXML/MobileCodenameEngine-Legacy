@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <libraries>
-	<!-- Mobile Libraries
+	<!-- Mobile Libraries -->
 	<git name="extension-androidtools" url="https://github.com/ChanceXML/extension-androidtools" />
-	<git name="IOSTools" url="https://github.com/ChanceXML/IOSTools" /> -->
+	<git name="IOSTools" url="https://github.com/ChanceXML/IOSTools" />
 	
 	<!-- OpenFL & Lime (Required for Flixel) -->
 	<lib name="openfl" version="9.2.2" />
