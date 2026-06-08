@@ -68,6 +68,11 @@ class PlaytestingWarningSubstate extends MusicBeatSubstate
 
 		curSelected = options.length-1;
 		changeSelection(0);
+
+		#if mobile
+        virtualPad = new VirtualPad(LEFT_RIGHT, NONE);
+        add(virtualPad);
+        #end
 	}
 
 	var sinner:Float = 0;
@@ -92,7 +97,7 @@ class PlaytestingWarningSubstate extends MusicBeatSubstate
 			option.offset.y = CoolUtil.fpsLerp(option.offset.y, i == curSelected ? 10 : -10, 1/6);
 		}
 
-		if (controls.ACCEPT && !__firstFrame) {
+		if (controls.ACCEPT || FlxG.mouse.justPressed && !__firstFrame) {
 			buttonsData[curSelected].onClick(null);
 			close();
 		}
