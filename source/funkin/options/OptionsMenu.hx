@@ -15,6 +15,11 @@ class OptionsMenu extends TreeMenu {
 			substate: funkin.options.keybinds.KeybindsOptions
 		},
 		{
+			name: 'Mobile Options',
+			desc: 'Change Mobile Specific Stuff.',
+			state: MobileOptions
+		},
+		{
 			name: 'Gameplay >',
 			desc: 'Change Gameplay options such as Downscroll, Scroll Speed, Naughtyness...',
 			state: GameplayOptions
@@ -83,6 +88,10 @@ class OptionsMenu extends TreeMenu {
 			}
 		}
 
+        #if mobile
+        virtualPad = new VirtualPad(FULL, A_B);
+        add(virtualPad);
+        #end
 	}
 
 	public override function exit() {
