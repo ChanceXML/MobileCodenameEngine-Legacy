@@ -120,7 +120,7 @@ class SystemInfo extends FramerateCategory {
 	public static function init() {
 		#if linux
 		var process = new HiddenProcess("cat", ["/etc/os-release"]);
-		if (process.exitCode() != 0) Logs.error('Unable to grab OS Label');
+		if (process.exitCode() != 0) trace('Unable to grab OS Label');
 		else {
 			var osName = "";
 			var osVersion = "";
@@ -160,7 +160,7 @@ class SystemInfo extends FramerateCategory {
 		#else
 		if (lime.system.System.platformLabel != null && lime.system.System.platformLabel != "" && lime.system.System.platformVersion != null && lime.system.System.platformVersion != "")
 			osInfo = '${lime.system.System.platformLabel.replace(lime.system.System.platformVersion, "").trim()} ${lime.system.System.platformVersion}';
-		else Logs.error('Unable to grab OS Label');
+		else trace('Unable to grab OS Label');
 		#end
 
 		try {
@@ -174,7 +174,7 @@ class SystemInfo extends FramerateCategory {
 				if (line.indexOf("model name") == 0) { cpuName = line.substring(line.indexOf(":") + 2); break; }
 			}
 			#end
-		} catch (e) { Logs.error('Unable to grab CPU Name: $e'); }
+		} catch (e) { trace('Unable to grab CPU Name: $e'); }
 
 		@:privateAccess if(flixel.FlxG.renderTile) {
 			if (flixel.FlxG.stage.context3D != null && flixel.FlxG.stage.context3D.gl != null) {
@@ -236,8 +236,7 @@ class AssetTreeInfo extends FramerateCategory {
 		if (Paths.assetsTree != null){
 			text = "";
 			for(l in Paths.assetsTree.libraries) {
-				var l = AssetsLibraryList.getCleanLibrary(l);
-				text += '[${l.tag.toString().toUpperCase()}] ';
+                text += '[${l.tag.toString().toUpperCase()}] ';
 				var className = Type.getClassName(Type.getClass(l)).split(".").pop();
 				#if TRANSLATIONS_SUPPORT
 				if (l is TranslatedAssetLibrary) text += '${className} - ${cast(l, TranslatedAssetLibrary).langFolder} for (${cast(l, TranslatedAssetLibrary).modName})\n';
@@ -258,7 +257,7 @@ class ConductorInfo extends FramerateCategory {
 		if (alpha <= 0.05) return;
 		_text = 'Current Song Position: ${Math.floor(Conductor.songPosition * 1000) / 1000}';
 		_text += '\n - ${Conductor.curBeat} beats\n - ${Conductor.curStep} steps\n - ${Conductor.curMeasure} measures';
-		_text += '\nCurrent BPM: ${Conductor.bpm}\nTime Signature: ${Conductor.beatsPerMeasure}/${Conductor.denominator}';
+		_text += '\nCurrent BPM: ${Conductor.bpm}\nTime Signature: ${Conductor.beatsPerMeasure}/4';
 		this.text.text = _text;
 		super.__enterFrame(t);
 	}
@@ -555,7 +554,11 @@ class Framerate extends Sprite {
 		x = 10 + offset.x;
 		y = 2 + offset.y;
 
-		var width = MathUtil.maxSmart(fpsCounter.width, memoryCounter.width #if SHOW_BUILD_ON_FPS , codenameBuildField.width #end) + (x*2);
+		var width:Float = Math.max(fpsCounter.width, memoryCounter.width); 
+		#if SHOW_BUILD_ON_FPS
+        width = Math.max(width, codenameBuildField.width);
+        #end
+        width += (x * 2);
 		var height = #if SHOW_BUILD_ON_FPS codenameBuildField.y + codenameBuildField.height #else memoryCounter.y + memoryCounter.height #end;
 		bgSprite.x = -x;
 		bgSprite.y = offset.x;
