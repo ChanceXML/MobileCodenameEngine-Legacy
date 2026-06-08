@@ -21,8 +21,9 @@ class UIFileExplorer extends UISliceSprite {
 		if (onFile != null) this.onFile = onFile;
 
 		uploadButton = new UIButton(x + 8, y+ 8, "", function () {
+			/**
 			#if android
-			AndroidTools.pickFile("*/*", function(path:String) {
+			AndroidTools.pickFile("*5/*", function(path:String) {
 				if (path != null && path != "") {
 					loadFile(path);
 				}
@@ -35,6 +36,7 @@ class UIFileExplorer extends UISliceSprite {
                 }
             });
 			#end
+            **/
 			var fileDialog = new FileDialog();
 			fileDialog.onOpen.add(function(res) {
 				file = cast res;
