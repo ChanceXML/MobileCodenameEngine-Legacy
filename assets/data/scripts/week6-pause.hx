@@ -63,7 +63,9 @@ function create(event) {
 
 	FlxG.sound.play(Paths.sound(isThorns ? 'pixel/ANGRY' : 'pixel/clickText'));
 
+	#if mobile
 	addVirtualPad('UP_DOWN', 'A_B');
+	#end
 }
 
 function confText(text) {
@@ -82,6 +84,9 @@ function destroy() {
 var canDoShit = true;
 var time:Float = 0;
 function update(elapsed) {
+	#if mobile
+    if (virtualPad != null) virtualPad.update(elapsed);
+	#end
 	pixelScript.call("postUpdate", [elapsed]);
 
 	pauseCam.alpha = lerp(pauseCam.alpha, 1, 0.25);
