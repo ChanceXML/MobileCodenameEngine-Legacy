@@ -121,7 +121,7 @@ class Main extends Sprite
 		trace("2.999999");
 		MemoryUtil.init();
 		@:privateAccess
-		trace("4");
+		//trace("4");
 		FlxG.game.getTimer = getTimer;
 		#if ALLOW_MULTITHREADING
 		for(i in 0...4)
