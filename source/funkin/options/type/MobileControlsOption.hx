@@ -1,0 +1,33 @@
+package funkin.options.type;
+
+import flixel.FlxG;
+
+class MobileControlsOption extends ArrayOption
+{
+	public function new(text:String, desc:String)
+	{
+		super(
+			text,
+			desc,
+			['Hitbox', 'Dpad', 'Double Dpad', 'Custom', 'None'],
+			['Hitbox', 'Dpad', 'Double Dpad', 'Custom', 'None'],
+			'mobilecontrols'
+		);
+
+		__selectiontext.text = " >";
+	}
+
+	override function formatTextOption()
+	{
+		return " >";
+	}
+
+	override function onChangeSelection(change:Float)
+	{
+	}
+
+	function select()
+	{
+		FlxG.state.openSubState(new funkin.menus.MobileControlsSubstate());
+	}
+}
