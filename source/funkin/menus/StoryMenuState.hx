@@ -124,6 +124,11 @@ class StoryMenuState extends MusicBeatState {
 
 		DiscordUtil.call("onMenuLoaded", ["Story Menu"]);
 		CoolUtil.playMenuSong();
+
+		#if mobile
+        virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+        #end
 	}
 
 	var __lastDifficultyTween:FlxTween;
@@ -134,9 +139,30 @@ class StoryMenuState extends MusicBeatState {
 		scoreText.text = 'WEEK SCORE:${Math.round(lerpScore)}';
 
 		if (canSelect) {
-			if (leftArrow != null && leftArrow.exists) leftArrow.animation.play(controls.LEFT ? 'press' : 'idle');
-			if (rightArrow != null && rightArrow.exists) rightArrow.animation.play(controls.RIGHT ? 'press' : 'idle');
+			#if mobile
+			var hoveringLeft = FlxG.mouse.overlaps(leftArrow);
+			var hoveringRight = FlxG.mouse.overlaps(rightArrow);
+			
+			if (FlxG.mouse.overlaps(leftArrow)) {
+                leftArrow.animation.play("press");
 
+                if (FlxG.mouse.justPressed)
+                    changeDifficulty(-1);
+            }
+
+            if (FlxG.mouse.overlaps(rightArrow)) {
+                rightArrow.animation.play("press");
+
+                if (FlxG.mouse.justPressed)
+                    changeDifficulty(1);
+            }
+			#end
+			
+			if (leftArrow != null && leftArrow.exists) 
+				leftArrow.animation.play(controls.LEFT #if mobile || hoveringLeft #end ? 'press' : 'idle');
+			if (rightArrow != null && rightArrow.exists) 
+				rightArrow.animation.play(controls.RIGHT #if mobile || hoveringRight #end ? 'press' : 'idle');
+										  
 			if (controls.BACK) {
 				goBack();
 			}
