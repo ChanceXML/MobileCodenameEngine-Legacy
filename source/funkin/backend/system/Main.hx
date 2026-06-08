@@ -194,7 +194,7 @@ class Main extends Sprite
 		#end
 
 		trace("50");
-		ModsFolder.init();
+		//ModsFolder.init();
 		#if MOD_SUPPORT
 		ModsFolder.switchMod(modToLoad.getDefault(Options.lastLoadedMod));
 		#end
