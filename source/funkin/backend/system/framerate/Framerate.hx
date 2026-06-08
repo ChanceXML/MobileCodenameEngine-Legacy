@@ -236,7 +236,6 @@ class AssetTreeInfo extends FramerateCategory {
 		if (Paths.assetsTree != null){
 			text = "";
 			for(l in Paths.assetsTree.libraries) {
-                text += '[${l.tag.toString().toUpperCase()}] ';
 				var className = Type.getClassName(Type.getClass(l)).split(".").pop();
 				#if TRANSLATIONS_SUPPORT
 				if (l is TranslatedAssetLibrary) text += '${className} - ${cast(l, TranslatedAssetLibrary).langFolder} for (${cast(l, TranslatedAssetLibrary).modName})\n';
