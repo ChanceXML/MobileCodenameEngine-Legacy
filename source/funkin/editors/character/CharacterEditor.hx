@@ -7,15 +7,8 @@ import funkin.backend.utils.XMLUtil.AnimData;
 import flixel.math.FlxPoint;
 import funkin.editors.ui.UIContextMenu.UIContextMenuOption;
 import funkin.game.Character;
-#if mobile
-import mobile.controls.menus.VirtualPad;
-import mobile.controls.menus.FlxButton;
-#end
 
 class CharacterEditor extends UIState {
-	#if mobile
-    public var virtualPad:VirtualPad;
-    #end
 	static var __character:String;
 	public var character:Character;
 
