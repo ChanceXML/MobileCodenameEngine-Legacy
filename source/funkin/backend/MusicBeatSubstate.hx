@@ -11,8 +11,8 @@ import funkin.backend.system.Controls;
 import funkin.options.PlayerSettings;
 import flixel.FlxSubState;
 #if mobile
-import mobile.controls.VirtualPad;
-import mobile.controls.FlxButton;
+import mobile.controls.menus.VirtualPad;
+import mobile.controls.menus.FlxButton;
 #end
 
 class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
