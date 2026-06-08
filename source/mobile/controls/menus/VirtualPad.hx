@@ -147,6 +147,9 @@ class VirtualPad extends FlxSpriteGroup
 			case A_Y:
 				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "a"));
 				add(buttonY = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "y"));
+			case X_Y:
+				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "x"));
+				add(buttonB = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "y"));
 			case A_B_C:
 				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "a"));
 				add(buttonB = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "b"));
@@ -535,6 +538,6 @@ enum FlxDPadMode {
 }
 
 enum FlxActionMode {
-	NONE; A; B; X; Y; C; A_B; A_C; A_X; A_Y; A_B_C; A_X_Y; A_B_X_Y; A_C_X_Y; A_B_C_X_Y; B_C; B_X; B_Y; B_C_X_Y; B_X_Y;
+	NONE; A; B; X; Y; C; A_B; A_C; A_X; A_Y; X_Y; A_B_C; A_X_Y; A_B_X_Y; A_C_X_Y; A_B_C_X_Y; B_C; B_X; B_Y; B_C_X_Y; B_X_Y;
 }
 #end
