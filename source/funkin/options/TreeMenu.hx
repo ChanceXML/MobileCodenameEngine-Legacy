@@ -10,8 +10,8 @@ import funkin.options.type.OptionType;
 import funkin.options.type.TextOption;
 import funkin.backend.system.framerate.Framerate;
 #if mobile
-import mobile.controls.VirtualPad;
-import mobile.controls.FlxButton;
+import mobile.controls.menus.VirtualPad;
+import mobile.controls.menus.FlxButton;
 #end
 
 class TreeMenu extends UIState {
