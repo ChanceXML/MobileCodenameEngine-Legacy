@@ -16,7 +16,9 @@ import flixel.addons.transition.TransitionData;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import funkin.backend.system.modules.*;
-
+#if mobile
+import mobile.Input;
+#end
 #if ALLOW_MULTITHREADING
 import sys.thread.Thread;
 #end
@@ -24,6 +26,12 @@ import sys.thread.Thread;
 import sys.io.File;
 #end
 import funkin.backend.assets.ModsFolder;
+#if android
+//import AndroidTools;
+//import AndroidBuild;
+//import AndroidContext;
+//import AndroidPermissions;
+#end
 
 class Main extends Sprite
 {
@@ -46,7 +54,7 @@ class Main extends Sprite
 	public static var noTerminalColor:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
-	#if !mobile
+	#if !web
 	public static var framerateSprite:funkin.backend.system.framerate.Framerate;
 	#end
 
@@ -69,9 +77,27 @@ class Main extends Sprite
 	public static var gameThreads:Array<Thread> = [];
 	#end
 
+	public static function preInit() {
+		funkin.backend.utils.NativeAPI.registerAsDPICompatible();
+		funkin.backend.system.CommandLineHandler.parseCommandLine(Sys.args());
+		#if !mobile
+		funkin.backend.system.Main.fixWorkingDirectory();
+		#end
+	}
+
 	public function new()
 	{
 		super();
+		
+		#if android
+	    checkPermissions();
+
+    	if (AndroidPermissions.hasManageAllFiles()) {
+		    finalizeSetup();
+	    }
+        #elseif ios
+     	    finalizeSetup();
+        #end
 
 		instance = this;
 
@@ -79,12 +105,53 @@ class Main extends Sprite
 
 		addChild(game = new FunkinGame(gameWidth, gameHeight, MainState, Options.framerate, Options.framerate, skipSplash, startFullscreen));
 
-		#if (!mobile && !web)
+		#if !web
 		addChild(framerateSprite = new funkin.backend.system.framerate.Framerate());
 		SystemInfo.init();
 		#end
+
+		#if mobile
+		FlxG.plugins.add(new Input());
+        #end
 	}
 
+	#if android
+	private function onResult(_):Void {
+		if (AndroidPermissions.hasManageAllFiles()) {
+			finalizeSetup();
+			openfl.Lib.current.stage.removeEventListener(openfl.events.Event.ACTIVATE, onResult);
+		}
+	}
+    
+	private function checkPermissions():Void {
+		if (!AndroidPermissions.hasManageAllFiles()) {
+            haxe.Timer.delay(function() {
+               openfl.Lib.current.stage.addEventListener(openfl.events.Event.ACTIVATE, onResult);
+
+            AndroidPermissions.requestManageAllFiles(); 
+			}, 2000);
+		} else {
+			finalizeSetup();
+		}
+	}
+	#end	
+    #if mobile
+	private function finalizeSetup():Void {
+		var base = mobile.utils.CopyFiles.getAssetsDir();
+		
+		if (!base.endsWith("/")) base += "/";
+
+		var firstRun = !sys.FileSystem.exists(base + "assets/");
+
+		if (firstRun)
+		{
+			trace("First run detected. Starting file initialization...");
+			mobile.utils.CopyFiles.init();
+		} else {
+			trace("Assets already initialized at: " + base);
+		}
+	}
+    #end
 	@:dox(hide)
 	public static var audioDisconnected:Bool = false;
 
@@ -114,40 +181,28 @@ class Main extends Sprite
 	}
 
 	public static function loadGameSettings() {
-		trace("1");
 		WindowUtils.init();
-		trace("2");
 		SaveWarning.init();
-		trace("2.999999");
 		MemoryUtil.init();
 		@:privateAccess
-		//trace("4");
 		FlxG.game.getTimer = getTimer;
 		#if ALLOW_MULTITHREADING
 		for(i in 0...4)
 			gameThreads.push(Thread.createWithEventLoop(function() {Thread.current().events.promise();}));
 		#end
-		trace("5");
 		FunkinCache.init();
-		trace("100");
 		Paths.assetsTree = new AssetsLibraryList();
 
-		trace("7");
 		#if UPDATE_CHECKING
 		funkin.backend.system.updating.UpdateUtil.init();
 		#end
-		trace("8");
 		ShaderResizeFix.init();
-		trace("9");
 		Logs.init();
-		trace("10");
 		Paths.init();
-		trace("11");
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
 		#end
 
-		trace("12");
 		#if (sys && TEST_BUILD)
 			trace("Used cne test / cne build. Switching into source assets.");
 			#if MOD_SUPPORT
@@ -159,31 +214,36 @@ class Main extends Sprite
 			Paths.assetsTree.__defaultLibraries.push(ModsFolder.loadLibraryFromFolder('assets', './assets/', true));
 		#end
 
+		#if android
+        var androidDir = AndroidVersions.SDK_INT >= 30 
+            ? AndroidContext.getObbDir() 
+            : AndroidContext.getExternalFilesDir();
+        if (!sys.FileSystem.exists(androidDir)) {
+            sys.FileSystem.createDirectory(androidDir);
+        }
+        var root = haxe.io.Path.addTrailingSlash(androidDir);
+        Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
+        #elseif ios
+        var root = haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory);
+        Paths.assetsTree.addLibrary(ModsFolder.loadLibraryFromFolder('assets', root + 'assets/', true));
+        #end
 
-		trace("20");
 		var lib = new AssetLibrary();
 		@:privateAccess
 		lib.__proxy = Paths.assetsTree;
 		Assets.registerLibrary('default', lib);
 
-		trace("21");
 		funkin.options.PlayerSettings.init();
-		trace("22");
 		funkin.savedata.FunkinSave.init();
-		trace("27");
 		Options.load();
 
 		FlxG.fixedTimestep = false;
 
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
-		trace("28");
 		Conductor.init();
-		trace("29");
 		AudioSwitchFix.init();
-		trace("40");
 		EventManager.init();
-		trace("41");
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);
@@ -193,13 +253,11 @@ class Main extends Sprite
 		if(funkin.backend.utils.NativeAPI.hasVersion("Windows 10")) funkin.backend.utils.NativeAPI.redrawWindowHeader();
 		#end
 
-		trace("50");
-		//ModsFolder.init();
+		ModsFolder.init();
 		#if MOD_SUPPORT
 		ModsFolder.switchMod(modToLoad.getDefault(Options.lastLoadedMod));
 		#end
 
-		trace("51");
 		initTransition();
 	}
 
@@ -247,6 +305,47 @@ class Main extends Sprite
 		}
 
 		MemoryUtil.clearMajor();
+	}
+
+	public static var noCwdFix:Bool = false;
+	public static function fixWorkingDirectory() {
+	    #if windows
+	    if (!noCwdFix && !sys.FileSystem.exists('manifest/default.json')) {
+		    Sys.setCwd(haxe.io.Path.directory(Sys.programPath()));
+	    }
+     	#elseif android
+
+     	trace("=== fixWorkingDirectory START ===");
+	    trace("Current CWD: " + Sys.getCwd());
+
+    	var androidDir = AndroidVersions.SDK_INT >= 30
+     		? AndroidContext.getObbDir()
+     		: AndroidContext.getExternalFilesDir();
+ 
+     	trace("androidDir: '" + androidDir + "'");
+    	trace("androidDir exists: " + sys.FileSystem.exists(androidDir));
+    
+    	if (!sys.FileSystem.exists(androidDir)) {
+        	trace("Creating directory...");
+     		sys.FileSystem.createDirectory(androidDir);
+    	}
+
+       	try {
+	    	trace("Calling Sys.setCwd...");
+	    	Sys.setCwd(haxe.io.Path.addTrailingSlash(androidDir));
+
+	    	trace("Sys.setCwd finished");
+	     	trace("New CWD: " + Sys.getCwd());
+     	} catch (e) {
+       		trace("Sys.setCwd FAILED: " + Std.string(e));
+	    	trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+    	}
+
+	    trace("=== fixWorkingDirectory END ===");
+
+     	#elseif (ios || switch)
+    	Sys.setCwd(haxe.io.Path.addTrailingSlash(openfl.filesystem.File.applicationStorageDirectory.nativePath));
+      	#end
 	}
 
 	private static var _tickFocused:Float = 0;
