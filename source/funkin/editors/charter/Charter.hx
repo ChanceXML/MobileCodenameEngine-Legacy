@@ -25,8 +25,15 @@ import funkin.editors.ui.UIState;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
 import funkin.backend.shaders.CustomShader;
+#if mobile
+import mobile.controls.menus.VirtualPad;
+import mobile.controls.menus.FlxButton;
+#end
 
 class Charter extends UIState {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	public static var __song:String;
 	static var __diff:String;
 	static var __reload:Bool;
@@ -530,6 +537,21 @@ class Charter extends UIState {
 		dataDisplay.cameras = [charterCamera]; dataDisplay.x = -dataDisplay.width; add(dataDisplay);*/
 
 		DiscordUtil.call("onEditorLoaded", ["Chart Editor", __song + " (" + __diff + ")"]);
+
+		#if mobile
+		virtualPad = new VirtualPad(FULL, A_B_C_X_Y);
+        add(virtualPad);
+		
+		virtualPad.rebind('A', 'ENTER');
+		virtualPad.rebind('B', 'SPACE');
+		virtualPad.rebind('C', 'DELETE');
+		virtualPad.rebind('X', 'Q');
+		virtualPad.rebind('Y', 'E');
+		virtualPad.rebind('UP', 'W');
+		virtualPad.rebind('DOWN', 'S');
+		virtualPad.rebind('LEFT', 'A');
+		virtualPad.rebind('RIGHT', 'D');
+		#end
 	}
 
 	override function destroy() {
