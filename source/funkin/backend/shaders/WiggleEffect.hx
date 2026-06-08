@@ -3,6 +3,7 @@ package funkin.backend.shaders;
 // STOLEN FROM HAXEFLIXEL DEMO LOL
 import flixel.system.FlxAssets.FlxShader;
 
+@:dox(hide)
 enum WiggleEffectType
 {
 	DREAMY;
@@ -12,6 +13,7 @@ enum WiggleEffectType
 	FLAG;
 }
 
+@:dox(hide)
 class WiggleEffect
 {
 	public var shader(default, null):WiggleShader = new WiggleShader();
@@ -20,45 +22,56 @@ class WiggleEffect
 	public var waveFrequency(default, set):Float = 0;
 	public var waveAmplitude(default, set):Float = 0;
 
+	private var _time:Float = 0;
+
 	public function new():Void
 	{
-		shader.uTime.value = [0];
+		if (shader.uTime != null) shader.uTime.value = [0.0];
 	}
 
 	public function update(elapsed:Float):Void
 	{
-		shader.uTime.value[0] += elapsed;
+		_time += elapsed;
+		if (shader.uTime != null)
+		{
+			shader.uTime.value = [_time];
+		}
 	}
 
 	function set_effectType(v:WiggleEffectType):WiggleEffectType
 	{
 		effectType = v;
-		shader.effectType.value = [WiggleEffectType.getConstructors().indexOf(Std.string(v))];
+		if (shader.effectType != null)
+		{
+			var typeIndex:Float = WiggleEffectType.getConstructors().indexOf(Std.string(v));
+			shader.effectType.value = [typeIndex];
+		}
 		return v;
 	}
 
 	function set_waveSpeed(v:Float):Float
 	{
 		waveSpeed = v;
-		shader.uSpeed.value = [waveSpeed];
+		if (shader.uSpeed != null) shader.uSpeed.value = [waveSpeed];
 		return v;
 	}
 
 	function set_waveFrequency(v:Float):Float
 	{
 		waveFrequency = v;
-		shader.uFrequency.value = [waveFrequency];
+		if (shader.uFrequency != null) shader.uFrequency.value = [waveFrequency];
 		return v;
 	}
 
 	function set_waveAmplitude(v:Float):Float
 	{
 		waveAmplitude = v;
-		shader.uWaveAmplitude.value = [waveAmplitude];
+		if (shader.uWaveAmplitude != null) shader.uWaveAmplitude.value = [waveAmplitude];
 		return v;
 	}
 }
 
+@:dox(hide)
 class WiggleShader extends FlxShader
 {
 	@:glFragmentSource('
@@ -66,27 +79,27 @@ class WiggleShader extends FlxShader
 //uniform float tx, ty; // x,y waves phase
 uniform float uTime;
 
-const int EFFECT_TYPE_DREAMY = 0;
-const int EFFECT_TYPE_WAVY = 1;
-const int EFFECT_TYPE_HEAT_WAVE_HORIZONTAL = 2;
-const int EFFECT_TYPE_HEAT_WAVE_VERTICAL = 3;
-const int EFFECT_TYPE_FLAG = 4;
+const float EFFECT_TYPE_DREAMY = 0.0;
+const float EFFECT_TYPE_WAVY = 1.0;
+const float EFFECT_TYPE_HEAT_WAVE_HORIZONTAL = 2.0;
+const float EFFECT_TYPE_HEAT_WAVE_VERTICAL = 3.0;
+const float EFFECT_TYPE_FLAG = 4.0;
 
-uniform int effectType;
+uniform float effectType;
 
 /**
-	* How fast the waves move over time
-	*/
+* How fast the waves move over time
+*/
 uniform float uSpeed;
 
 /**
-	* Number of waves over time
-	*/
+* Number of waves over time
+*/
 uniform float uFrequency;
 
 /**
-	* How much the pixels are going to stretch over the waves
-	*/
+* How much the pixels are going to stretch over the waves
+*/
 uniform float uWaveAmplitude;
 
 vec2 sineWave(vec2 pt)
