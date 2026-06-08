@@ -11,6 +11,14 @@ class AppearanceOptions extends OptionsScreen {
 			10, // change
 			"framerate", // save name or smth
 			__changeFPS)); // callback
+		add(new NumOption(
+			"Framerate Size",
+			"Pretty self explanatory, isn't it?",
+			0,
+			1,
+			0.1,
+			"fpsSize", 
+			));
 		add(new Checkbox(
 			"Antialiasing",
 			"If unchecked, will disable antialiasing on every sprite. Can boost performances at the cost of sharper, more pixely sprites.",
