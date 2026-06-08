@@ -148,6 +148,11 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 	override function close() {
 		var event = event("onClose", new CancellableEvent());
 		if (!event.cancelled) {
+			#if mobile
+			VirtualPad.inputBlockFrames = 2;
+            FlxG.mouse.reset();
+            FlxG.touches.reset();
+			#end
 			super.close();
 			call("onClosePost");
 		}
