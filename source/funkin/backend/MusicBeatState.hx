@@ -13,8 +13,8 @@ import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.Conductor;
 import funkin.options.PlayerSettings;
 #if mobile
-import mobile.controls.VirtualPad;
-import mobile.controls.FlxButton;
+import mobile.controls.menus.VirtualPad;
+import mobile.controls.menus.FlxButton;
 #end
 
 class MusicBeatState extends FlxState implements IBeatReceiver
