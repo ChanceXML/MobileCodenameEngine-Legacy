@@ -111,6 +111,11 @@ class PauseSubState extends MusicBeatSubstate
 		pauseScript.call("postCreate");
 
 		game.updateDiscordPresence();
+
+		#if mobile
+        virtualPad = new VirtualPad(UP_DOWM, A_B);
+        add(virtualPad);
+        #end
 	}
 
 	override function update(elapsed:Float)
