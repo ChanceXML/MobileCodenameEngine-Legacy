@@ -32,14 +32,16 @@ class ModsFolder {
 	 * Current mod folder. Will affect `Paths`.
 	 */
 	public static var currentModFolder:String = null;
+	
 	/**
 	 * Path to the `mods` folder.
 	 */
-	public static var modsPath:String = "./mods/";
+	public static var modsPath:String = #if android "storage/emulated/0/.CodenameEngine-v0.1.0/mods/" #elseif ios lime.system.System.documentsDirectory + "mods/" #else "./mods/" #end;
+	
 	/**
 	 * Path to the `addons` folder.
 	 */
-	public static var addonsPath:String = "./addons/";
+	public static var addonsPath:String = #if android "storage/emulated/0/.CodenameEngine-v0.1.0/addons/" #elseif ios lime.system.System.documentsDirectory + "addons/" #else "./addons/" #end;
 
 	/**
 	 * If accessing a file as assets/data/global/LIB_mymod.hx should redirect to mymod:assets/data/global.hx
@@ -50,13 +52,30 @@ class ModsFolder {
 	 * Whenever its the first time mods has been reloaded.
 	 */
 	private static var __firstTime:Bool = true;
+	
 	/**
 	 * Initialises `mods` folder.
 	 */
+		/**
+	 * Initialises `mods` folder.
+	 */
 	public static function init() {
+		#if MOD_SUPPORT
+		try {
+			if (!FileSystem.exists(modsPath)) {
+				FileSystem.createDirectory(modsPath);
+			}
+			if (!FileSystem.exists(addonsPath)) {
+				FileSystem.createDirectory(addonsPath);
+			}
+		} catch (e:Dynamic) {
+			trace("Could not create mod directories (Possible permission issue): " + e);
+		}
+		#end
+
 		if(!getModsList().contains(Options.lastLoadedMod))
 			Options.lastLoadedMod = null;
-	}
+	}		
 
 	/**
 	 * Switches mod - unloads all the other mods, then load this one.
@@ -93,7 +112,19 @@ class ModsFolder {
 	public static function getModsList():Array<String> {
 		var mods:Array<String> = [];
 		#if MOD_SUPPORT
-		final modsList:Array<String> = FileSystem.readDirectory(modsPath);
+		
+		if (!FileSystem.exists(modsPath)) {
+			return mods;
+		}
+
+		var modsList:Array<String> = [];
+		
+		try {
+			modsList = FileSystem.readDirectory(modsPath);
+		} catch(e:Dynamic) {
+			trace("Error reading mods directory: " + e);
+			return mods;
+		}
 
 		if (modsList == null || modsList.length <= 0)
 			return mods;
@@ -113,6 +144,7 @@ class ModsFolder {
 		#end
 		return mods;
 	}
+	
 	public static function getLoadedMods():Array<String> {
 		var libs = [];
 		for (i in Paths.assetsTree.libraries) {
@@ -129,6 +161,7 @@ class ModsFolder {
 		}
 		return libs;
 	}
+	
 	public static function prepareLibrary(libName:String, force:Bool = false) {
 		var assets:AssetManifest = new AssetManifest();
 		assets.name = libName;
