@@ -82,6 +82,11 @@ class MainMenuState extends MusicBeatState
 		add(versionText);
 
 		changeItem();
+
+		#if mobile
+        virtualPad = new VirtualPad(NONE, X_Y);
+        add(virtualPad);
+        #end
 	}
 
 	var selectedSomethin:Bool = false;
@@ -94,6 +99,21 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
+			for (spr in menuItems.members)
+            {
+                if (spr != null && FlxG.mouse.overlaps(spr))
+            {
+                if (curSelected != spr.ID)
+                changeItem(spr.ID - curSelected);
+
+                if (FlxG.mouse.justPressed)
+                {
+                    selectItem();
+                    break;
+                    }
+                }
+			}
+			
 			if (canAccessDebugMenus) {
 				if (FlxG.keys.justPressed.SEVEN) {
 					persistentUpdate = false;
