@@ -9,8 +9,15 @@ import flixel.util.typeLimit.OneOfTwo;
 import funkin.options.type.OptionType;
 import funkin.options.type.TextOption;
 import funkin.backend.system.framerate.Framerate;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class TreeMenu extends UIState {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	public var main:OptionsScreen;
 	public var optionsTree:OptionsTree;
 	public var pathLabel:FunkinText;
