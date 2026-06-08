@@ -35,6 +35,11 @@ class CharacterSelection extends EditorTreeMenu
 		main = new OptionsScreen("Character Editor", "Select a character to edit", list);
 
 		DiscordUtil.call("onEditorTreeLoaded", ["Character Editor"]);
+
+		#if mobile
+        virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+        #end
 	}
 
 	override function createPost() {
