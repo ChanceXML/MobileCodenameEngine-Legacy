@@ -10,9 +10,17 @@ import funkin.backend.system.Conductor;
 import funkin.backend.system.Controls;
 import funkin.options.PlayerSettings;
 import flixel.FlxSubState;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+		
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
