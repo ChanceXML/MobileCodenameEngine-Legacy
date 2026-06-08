@@ -26,7 +26,7 @@ class MobileControlsOption extends ArrayOption
 	{
 	}
 
-	function select()
+	function onSelect() {
 	{
 		FlxG.state.openSubState(new funkin.menus.MobileControlsSubstate());
 	}
