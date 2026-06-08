@@ -147,9 +147,10 @@ class VirtualPad extends FlxSpriteGroup
 			case A_Y:
 				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "a"));
 				add(buttonY = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "y"));
+			// USED FOR THE MAIN MENU
 			case X_Y:
-				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "x"));
-				add(buttonB = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "y"));
+				add(buttonY = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "y"));
+				add(buttonX = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "x"));
 			case A_B_C:
 				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, B_W, B_H, "a"));
 				add(buttonB = createButton(FlxG.width - 258, FlxG.height - 135, B_W, B_H, "b"));
