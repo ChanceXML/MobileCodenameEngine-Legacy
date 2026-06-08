@@ -21,7 +21,7 @@ import iostools.Permissions.PermissionManager as IOSPermissionManager;
 import iostools.Permissions.PermissionType as IOSPermissionType;
 import iostools.Storage.StorageManager as IOSStorageManager;
 import iostools.UI.AlertManager as IOSAlert;
-import iostools.UI.FeedbackManager as IOSFeedback:
+import iostools.UI.FeedbackManager as IOSFeedback;
 #else
 //
 //
