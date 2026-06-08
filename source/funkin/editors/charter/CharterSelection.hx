@@ -48,6 +48,11 @@ class CharterSelection extends EditorTreeMenu {
 		main = new OptionsScreen("Chart Editor", "Select a song to modify the charts from.", list);
 
 		DiscordUtil.call("onEditorTreeLoaded", ["Chart Editor"]);
+
+	    #if mobile
+        virtualPad = new VirtualPad(UP_DOWN, A_B);
+        add(virtualPad);
+        #end
 	}
 
 	override function createPost() {
