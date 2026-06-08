@@ -12,9 +12,17 @@ import funkin.backend.scripting.ScriptPack;
 import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.Conductor;
 import funkin.options.PlayerSettings;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class MusicBeatState extends FlxState implements IBeatReceiver
 {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
+		
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
