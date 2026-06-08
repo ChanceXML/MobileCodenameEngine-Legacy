@@ -785,6 +785,16 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
+		#if mobile
+		// controls
+		addMobileControls();
+			
+        // pausebutton.
+		var androidPause = new mobile.controls.game.PauseButton();
+        add(androidPause);
+        androidPause.setPauseButton('true');
+		#end
+
 		for(s in introSprites)
 			if (s != null)
 				graphicCache.cache(Paths.image(s));
@@ -897,6 +907,39 @@ class PlayState extends MusicBeatState
 		}
 		scripts.call("onPostStartCountdown");
 	}
+
+	/**
+     * Chooses the controls for mobile
+    **/
+	#if mobile
+	function addMobileControls()
+	{
+		var controlMode:String = Options.mobilecontrols;
+		if (controlMode == null) controlMode = 'Hitbox';
+
+		switch (controlMode)
+		{
+			case 'Hitbox':
+				hitbox = new HitBox(Options.hitboxStyle, Options.hintStyle);
+                add(hitbox);
+                hitbox.setupCamera();
+
+			case 'Dpad':
+				virtualPad = new VirtualPad(FULL, NONE); 
+				add(virtualPad);
+
+			case 'Double Dpad':
+				virtualPad = new VirtualPad(DOUBLE, NONE);
+				add(virtualPad);
+
+			case 'Custom':
+				virtualPad = new VirtualPad(CUSTOM, NONE);
+				add(virtualPad);
+
+			case 'None':
+		}
+	}
+	#end
 
 	/**
 	 * Creates a fake countdown.
@@ -1348,6 +1391,38 @@ class PlayState extends MusicBeatState
 		#end
 
 		super.update(elapsed);
+
+		#if mobile
+		if (hitbox != null) {
+            if (hitbox.UP.justPressed) {
+                FlxG.keys.handleAction(FlxKey.W, true);
+            }
+            if (hitbox.UP.justReleased) {
+                FlxG.keys.handleAction(FlxKey.W, false);
+            }
+
+            if (hitbox.DOWN.justPressed) {
+                FlxG.keys.handleAction(FlxKey.S, true);
+            }
+            if (hitbox.DOWN.justReleased) {
+                FlxG.keys.handleAction(FlxKey.S, false);
+            }
+
+            if (hitbox.LEFT.justPressed) {
+                FlxG.keys.handleAction(FlxKey.A, true);
+            }
+            if (hitbox.LEFT.justReleased) {
+                FlxG.keys.handleAction(FlxKey.A, false);
+            }
+
+            if (hitbox.RIGHT.justPressed) {
+               FlxG.keys.handleAction(FlxKey.D, true);
+            }
+            if (hitbox.RIGHT.justReleased) {
+                FlxG.keys.handleAction(FlxKey.D, false);
+           }
+	    }
+		#end
 
 		scripts.call("postUpdate", [elapsed]);
 	}
