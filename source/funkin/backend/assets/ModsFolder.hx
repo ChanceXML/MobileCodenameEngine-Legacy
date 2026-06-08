@@ -36,12 +36,12 @@ class ModsFolder {
 	/**
 	 * Path to the `mods` folder.
 	 */
-	public static var modsPath:String = #if android "storage/emulated/0/.CodenameEngine-v0.1.0/mods/" #elseif ios lime.system.System.documentsDirectory + "mods/" #else "./mods/" #end;
+	public static var modsPath:String = #if android "/storage/emulated/0/.CodenameEngine-v0.1.0/mods/" #elseif ios lime.system.System.documentsDirectory + "mods/" #else "./mods/" #end;
 	
 	/**
 	 * Path to the `addons` folder.
 	 */
-	public static var addonsPath:String = #if android "storage/emulated/0/.CodenameEngine-v0.1.0/addons/" #elseif ios lime.system.System.documentsDirectory + "addons/" #else "./addons/" #end;
+	public static var addonsPath:String = #if android "/storage/emulated/0/.CodenameEngine-v0.1.0/addons/" #elseif ios lime.system.System.documentsDirectory + "addons/" #else "./addons/" #end;
 
 	/**
 	 * If accessing a file as assets/data/global/LIB_mymod.hx should redirect to mymod:assets/data/global.hx
