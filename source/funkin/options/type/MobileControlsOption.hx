@@ -2,10 +2,8 @@ package funkin.options.type;
 
 import flixel.FlxG;
 
-class MobileControlsOption extends ArrayOption
-{
-	public function new(text:String, desc:String)
-	{
+class MobileControlsOption extends ArrayOption {
+	public function new(text:String, desc:String) {
 		super(
 			text,
 			desc,
@@ -17,17 +15,14 @@ class MobileControlsOption extends ArrayOption
 		__selectiontext.text = " >";
 	}
 
-	override function formatTextOption()
-	{
+	override function formatTextOption() {
 		return " >";
 	}
 
-	override function onChangeSelection(change:Float)
-	{
+	override function onChangeSelection(change:Float) {
 	}
 
 	function onSelect() {
-	{
 		FlxG.state.openSubState(new funkin.menus.MobileControlsSubstate());
 	}
 }
