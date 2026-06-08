@@ -18,8 +18,8 @@ import lime.text.Font;
 import openfl.text.Font as OpenFLFont;
 
 #if android
-import extension.androidtools.content.Context;
-import extension.androidtools.os.Build.VERSION;
+//import extension.androidtools.content.Context;
+//import extension.androidtools.os.Build.VERSION;
 #end
 
 using StringTools;
@@ -32,7 +32,7 @@ class Paths
 
 	public static function init() {
 		#if android
-		Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT >= 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
+		Sys.setCwd(haxe.io.Path.addTrailingSlash(VERSION.SDK_INT >= 30 ? AndroidContext.getObbDir() : AndroidContext.getExternalFilesDir()));
 		#end
 
 		FlxG.signals.preStateSwitch.add(function() {
