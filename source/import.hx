@@ -14,14 +14,6 @@ import extension.androidtools.os.Environment as AndroidEnvironment;
 import extension.androidtools.widget.Toast as AndroidToast;
 #elseif ios
 import iostools.IOSTools as IOSTools;
-import iostools.Device.DeviceManager as IOSDeviceManager;
-import iostools.Files.FilePermissionManager as IOSPermissions;
-import iostools.Files.FilePickerManager as IOSFilePicker;
-import iostools.Permissions.PermissionManager as IOSPermissionManager;
-import iostools.Permissions.PermissionType as IOSPermissionType;
-import iostools.Storage.StorageManager as IOSStorageManager;
-import iostools.UI.AlertManager as IOSAlert;
-import iostools.UI.FeedbackManager as IOSFeedback;
 #else
 //
 //
