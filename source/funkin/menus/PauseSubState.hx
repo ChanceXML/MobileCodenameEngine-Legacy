@@ -113,7 +113,7 @@ class PauseSubState extends MusicBeatSubstate
 		game.updateDiscordPresence();
 
 		#if mobile
-        virtualPad = new VirtualPad(UP_DOWM, A_B);
+        virtualPad = new VirtualPad(UP_DOWN, A_B);
         add(virtualPad);
         #end
 	}
