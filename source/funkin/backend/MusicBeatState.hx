@@ -13,13 +13,18 @@ import funkin.backend.system.interfaces.IBeatReceiver;
 import funkin.backend.system.Conductor;
 import funkin.options.PlayerSettings;
 #if mobile
+import mobile.controls.game.PauseButton;
+import mobile.controls.game.HitBox;
 import mobile.controls.menus.VirtualPad;
-import mobile.controls.menus.FlxButton;
+import flixel.input.keyboard.FlxKey;
+import funkin.options.Options;
+import funkin.menus.MobileControlsSubstate;
 #end
 
 class MusicBeatState extends FlxState implements IBeatReceiver
 {
 	#if mobile
+	public var hitbox:HitBox;
     public var virtualPad:VirtualPad;
     #end
 		
