@@ -1,6 +1,8 @@
 package mobile;
 
 import flixel.FlxG;
+import flixel.math.FlxPoint;
+import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
 import flixel.input.touch.FlxTouch;
 import mobile.controls.menus.VirtualPad;
@@ -9,17 +11,29 @@ import mobile.controls.menus.VirtualPad;
 class Input extends FlxBasic {
     public var isInputEnabled(get, set):Bool;
     
+    public static var holdDelay:Float = 0.25; 
+    public static var clickThreshold:Float = 10.0;
+
     private var _enabled:Bool = true;
     private var trackedTouchID:Int = -1;
     private var wasVirtualPadTouching:Bool = false;
 
-    private var lastTouchX:Float = 0.0;
-    private var lastTouchY:Float = 0.0;
-    private var lastTouchScreenX:Float = 0.0;
-    private var lastTouchScreenY:Float = 0.0;
+    private var pressTime:Float = 0.0;
+    private var isPressing:Bool = false;
+    private var isDragging:Bool = false;
+    private var startPos:FlxPoint;
+
+    private var simulatedState:Int = 0; 
+    private var pendingTapRelease:Bool = false;
+
+    private var lastMouseX:Int = 0;
+    private var lastMouseY:Int = 0;
+    private var lastScreenX:Int = 0;
+    private var lastScreenY:Int = 0;
 
     public function new() {
         super();
+        startPos = FlxPoint.get();
     }
 
     override public function update(elapsed:Float):Void {
@@ -38,15 +52,14 @@ class Input extends FlxBasic {
         wasVirtualPadTouching = false;
         
         var activeTouch:FlxTouch = getActiveTouchInstance();
-        
-        processMouseStateTransitions();
 
         if (activeTouch != null) {
-            updateTouchCoordinates(activeTouch);
-            applyTouchToMouseState(activeTouch);
+            processTouchInput(activeTouch, elapsed);
         } else {
-            invalidateTrackedTouch();
+            processDetachedInput(elapsed);
         }
+
+        applySimulatedStateToMouse();
 
         super.update(elapsed);
     }
@@ -74,6 +87,12 @@ class Input extends FlxBasic {
     }
 
     private function handleVirtualPadConflict():Void {
+        isPressing = false;
+        isDragging = false;
+        trackedTouchID = -1;
+        simulatedState = 0;
+        pendingTapRelease = false;
+
         if (!wasVirtualPadTouching) {
             @:privateAccess {
                 var currentState:Int = FlxG.mouse._leftButton.current;
@@ -83,7 +102,6 @@ class Input extends FlxBasic {
                     FlxG.mouse._leftButton.current = 0;
                 }
             }
-            trackedTouchID = -1;
             wasVirtualPadTouching = true;
         } else {
             @:privateAccess FlxG.mouse._leftButton.current = 0;
@@ -118,49 +136,110 @@ class Input extends FlxBasic {
         return null;
     }
 
-    private function processMouseStateTransitions():Void {
-        @:privateAccess {
-            var state:Int = FlxG.mouse._leftButton.current;
-            if (state == -1) {
-                FlxG.mouse._leftButton.current = 0;
-            } else if (state == 2) {
-                FlxG.mouse._leftButton.current = 1;
+    private function processTouchInput(touch:FlxTouch, elapsed:Float):Void {
+        var rawJustPressed:Bool = touch.justPressed;
+        var rawPressed:Bool = touch.pressed;
+        var rawJustReleased:Bool = touch.justReleased;
+        var tx:Float = touch.x;
+        var ty:Float = touch.y;
+        
+        lastMouseX = Std.int(tx);
+        lastMouseY = Std.int(ty);
+        lastScreenX = Std.int(touch.screenX);
+        lastScreenY = Std.int(touch.screenY);
+        
+        if (rawJustReleased) {
+            trackedTouchID = -1;
+        }
+
+        if (rawJustPressed) {
+            pressTime = 0.0;
+            isPressing = true;
+            isDragging = false;
+            startPos.set(tx, ty);
+        }
+
+        if (isPressing && rawPressed) {
+            pressTime += elapsed;
+            
+            var dx:Float = startPos.x - tx;
+            var dy:Float = startPos.y - ty;
+            var distance:Float = Math.sqrt((dx * dx) + (dy * dy));
+
+            if (!isDragging && (pressTime >= holdDelay || distance >= clickThreshold)) {
+                isDragging = true;
+                simulatedState = 2;
             }
+        }
+
+        if (rawJustReleased && isPressing) {
+            if (!isDragging) {
+                simulatedState = 2;
+                pendingTapRelease = true;
+            } else {
+                simulatedState = -1;
+            }
+            isPressing = false;
+            isDragging = false;
         }
     }
 
-    private function updateTouchCoordinates(touch:FlxTouch):Void {
-        lastTouchX = touch.x;
-        lastTouchY = touch.y;
-        lastTouchScreenX = touch.screenX;
-        lastTouchScreenY = touch.screenY;
-
-        FlxG.mouse.x = Std.int(lastTouchX);
-        FlxG.mouse.y = Std.int(lastTouchY);
-        FlxG.mouse.screenX = Std.int(lastTouchScreenX);
-        FlxG.mouse.screenY = Std.int(lastTouchScreenY);
-    }
-
-    private function applyTouchToMouseState(touch:FlxTouch):Void {
-        @:privateAccess {
-            if (touch.justPressed) {
-                FlxG.mouse._leftButton.current = 2;
-            } 
-            else if (touch.justReleased) {
-                FlxG.mouse._leftButton.current = -1;
-                trackedTouchID = -1;
+    private function processDetachedInput(elapsed:Float):Void {
+        if (isPressing) {
+            if (!isDragging) {
+                simulatedState = 2;
+                pendingTapRelease = true;
+            } else {
+                simulatedState = -1;
             }
-            else if (touch.pressed) {
-                FlxG.mouse._leftButton.current = 1;
-            }
+            isPressing = false;
+            isDragging = false;
         }
-    }
-
-    private function invalidateTrackedTouch():Void {
         trackedTouchID = -1;
     }
 
+    private function applySimulatedStateToMouse():Void {
+        @:privateAccess {
+            if (simulatedState == -1) {
+                FlxG.mouse._leftButton.current = -1;
+                updateMouseCoordinates();
+                simulatedState = 0;
+            }
+            else if (simulatedState == 2) {
+                FlxG.mouse._leftButton.current = 2;
+                updateMouseCoordinates();
+                
+                if (pendingTapRelease) {
+                    simulatedState = -1;
+                    pendingTapRelease = false;
+                } else {
+                    simulatedState = 1;
+                }
+            }
+            else if (simulatedState == 1) {
+                if (!isDragging && !isPressing) {
+                    simulatedState = 0;
+                    FlxG.mouse._leftButton.current = 0;
+                } else {
+                    FlxG.mouse._leftButton.current = 1;
+                    updateMouseCoordinates();
+                }
+            }
+            else {
+                FlxG.mouse._leftButton.current = 0;
+            }
+        }
+    }
+
+    private function updateMouseCoordinates():Void {
+        FlxG.mouse.x = lastMouseX;
+        FlxG.mouse.y = lastMouseY;
+        FlxG.mouse.screenX = lastScreenX;
+        FlxG.mouse.screenY = lastScreenY;
+    }
+
     override public function destroy():Void {
+        startPos = FlxDestroyUtil.put(startPos);
         trackedTouchID = -1;
         wasVirtualPadTouching = false;
         super.destroy();
