@@ -24,6 +24,7 @@ class Options
 	public static var hintOpacity:Float = 0.25;
 	public static var fpsSize:Float = 1;
 	public static var virtualPadOpacity:Float = 0.7;
+	public static var ignoreErrors:Bool = false;
 	public static var naughtyness:Bool = true;
 	public static var downscroll:Bool = false;
 	public static var ghostTapping:Bool = true;
