@@ -1,7 +1,7 @@
 package mobile;
 
 import flixel.FlxG;
-import flixel.math.FlPoint;
+import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
 import flixel.input.touch.FlxTouch;
