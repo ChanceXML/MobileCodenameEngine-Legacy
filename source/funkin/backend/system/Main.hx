@@ -19,6 +19,7 @@ import flixel.math.FlxRect;
 import funkin.backend.system.modules.*;
 #if mobile
 import mobile.Input;
+import funkin.backend.utils.NativeAPI;
 #end
 #if ALLOW_MULTITHREADING
 import sys.thread.Thread;
@@ -91,7 +92,9 @@ class Main extends Sprite
 		super();
 		
 		#if android
-	    checkPermissions();
+	    NativeAPI.showMessageBox("Permissions Required", "Please grant file access permissions.");
+
+        openfl.Lib.current.stage.addEventListener(openfl.events.Event.ACTIVATE, function(_) { checkPermissions(); });
 
     	if (AndroidPermissions.hasManageAllFiles()) {
 		    finalizeSetup();
