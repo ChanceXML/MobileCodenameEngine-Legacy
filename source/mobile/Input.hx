@@ -5,7 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
 import flixel.input.touch.FlxTouch;
-import flixel.input.FlxInputState;
+import flixel.input.FlxInput.FlxInputState;
 import mobile.controls.menus.VirtualPad;
 
 #if mobile
