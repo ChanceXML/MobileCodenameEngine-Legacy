@@ -1,10 +1,11 @@
 package mobile;
 
 import flixel.FlxG;
-import flixel.math.FlxPoint;
+import flixel.math.FlPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxBasic;
 import flixel.input.touch.FlxTouch;
+import flixel.input.FlxInputState;
 import mobile.controls.menus.VirtualPad;
 
 #if mobile
@@ -95,16 +96,16 @@ class Input extends FlxBasic {
 
         if (!wasVirtualPadTouching) {
             @:privateAccess {
-                var currentState:Int = FlxG.mouse._leftButton.current;
-                if (currentState == 1 || currentState == 2) {
-                    FlxG.mouse._leftButton.current = -1;
+                var currentState = FlxG.mouse._leftButton.current;
+                if (currentState == FlxInputState.PRESSED || currentState == FlxInputState.JUST_PRESSED) {
+                    FlxG.mouse._leftButton.current = FlxInputState.JUST_RELEASED;
                 } else {
-                    FlxG.mouse._leftButton.current = 0;
+                    FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
                 }
             }
             wasVirtualPadTouching = true;
         } else {
-            @:privateAccess FlxG.mouse._leftButton.current = 0;
+            @:privateAccess FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
         }
     }
 
@@ -201,12 +202,12 @@ class Input extends FlxBasic {
     private function applySimulatedStateToMouse():Void {
         @:privateAccess {
             if (simulatedState == -1) {
-                FlxG.mouse._leftButton.current = -1;
+                FlxG.mouse._leftButton.current = FlxInputState.JUST_RELEASED;
                 updateMouseCoordinates();
                 simulatedState = 0;
             }
             else if (simulatedState == 2) {
-                FlxG.mouse._leftButton.current = 2;
+                FlxG.mouse._leftButton.current = FlxInputState.JUST_PRESSED;
                 updateMouseCoordinates();
                 
                 if (pendingTapRelease) {
@@ -219,23 +220,25 @@ class Input extends FlxBasic {
             else if (simulatedState == 1) {
                 if (!isDragging && !isPressing) {
                     simulatedState = 0;
-                    FlxG.mouse._leftButton.current = 0;
+                    FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
                 } else {
-                    FlxG.mouse._leftButton.current = 1;
+                    FlxG.mouse._leftButton.current = FlxInputState.PRESSED;
                     updateMouseCoordinates();
                 }
             }
             else {
-                FlxG.mouse._leftButton.current = 0;
+                FlxG.mouse._leftButton.current = FlxInputState.RELEASED;
             }
         }
     }
 
     private function updateMouseCoordinates():Void {
-        FlxG.mouse.x = lastMouseX;
-        FlxG.mouse.y = lastMouseY;
-        FlxG.mouse.screenX = lastScreenX;
-        FlxG.mouse.screenY = lastScreenY;
+        @:privateAccess {
+            FlxG.mouse.x = lastMouseX;
+            FlxG.mouse.y = lastMouseY;
+            FlxG.mouse.screenX = lastScreenX;
+            FlxG.mouse.screenY = lastScreenY;
+        }
     }
 
     override public function destroy():Void {
