@@ -4,6 +4,7 @@ import funkin.backend.utils.native.*;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.util.typeLimit.OneOfThree;
 import flixel.util.FlxColor;
+import funkin.options.Options;
 
 /**
  * Class for functions that talk to a lower level than haxe, such as message boxes, and more.
@@ -169,6 +170,9 @@ class NativeAPI {
 	 * Shows a message box
 	 */
 	public static function showMessageBox(caption:String, message:String, icon:MessageBoxIcon = MSG_WARNING) {
+		if (Options.ignoreErrors)
+            return;
+		
 		#if windows
 		Windows.showMessageBox(caption, message, icon);
 		#else
