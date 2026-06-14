@@ -2,8 +2,15 @@ package funkin.editors;
 
 import flixel.math.FlxPoint;
 import flixel.effects.FlxFlicker;
+#if mobile
+import mobile.controls.VirtualPad;
+import mobile.controls.FlxButton;
+#end
 
 class EditorPicker extends MusicBeatSubstate {
+	#if mobile
+    public var virtualPad:VirtualPad;
+    #end
 	public var bg:FlxSprite;
 
 	public var options:Array<Editor> = [
